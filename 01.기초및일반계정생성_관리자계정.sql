@@ -42,7 +42,7 @@ select username,user_id from dba_users;
 //비밀번호가 오류
 --CREATE user c##user1 IDENTIFIED BY 1234;
 
-CREATE user c##user2 IDENTIFIED BY 1234;
+CREATE user c##user2 IDENTIFIED BY "1234";
 
 --c##키워드를 회피하는 설정 
 alter session set "_oracle_script"=true;
@@ -73,7 +73,7 @@ grant resource, connect to TjoEUN;
 --데이터를 넣을때 insert를 사용한다.
 -- insert시 생성된 유저에게 테이블스페이스에 얼마만큼의 영역을 할당할것인지를  정해줘야함
 
---무한으로 쓰는 권한 보통 디폴트값으로 지정
+--무한으로 쓰는 권한 보통 디폴트값으로 지정 항상 기억하고 있을 수는 없으니 어디 메모해두고 쓰던지 쓸때 찾던지 해야한다.
 alter user tjoeun default tablespace users quota unlimited on users;
 
 --특정 용량만큼 정해서 할당
