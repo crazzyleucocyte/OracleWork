@@ -55,6 +55,7 @@ select instr('javascriptjavaoracle','a',3)from dual; --3번부터 찾으시오
 select instr('javascriptjavaoracle','a',1,3)from dual; --앞에서부터 찾는데 a가 3번째 나왔을때의 indx값
 select instr('javascriptjavaoracle','a',-1,2)from dual; --뒤에서부터 찾는데 a가 2번째 나왔을때의 indx값
 
+--employee에서 email의 _의위치, @의 위치 조회
 select email, instr(email,'_',1) "_의 위치", instr(email,'@') "@의 위치"
 from employee;
 --------------------------------------------------------------------------------------------
@@ -103,7 +104,7 @@ order by 아이디;
 */
 
 --employee에서 사원명, 이메일(길이 20, 오른쪽 정렬)
-select emp_name, email, lpad(email,27)  --덧붙이고자하는 문자 생략시 공백으로 채워짐
+select emp_name, email, lpad(email,6)  --덧붙이고자하는 문자 생략시 공백으로 채워짐
 from employee;
 ---------------------------------------------------------------------------  
 /*
@@ -145,10 +146,10 @@ SELECT TRIM(TRAILING 'A' FROM 'AAABKSLEIDKAAA') FROM DUAL;
 */
 SELECT LOWER('Java JavaScript Oracle') from dual;
 SELECT UPPER('Java JavaScript Oracle') from dual; 
-SELECT INITCAP('java javaScript oracle') from dual;
+SELECT INITCAP('java javaScript oracle') from dual;--띄어쓰기 기분 맨 앞글자만 대문자
 
 -- EMPLOYEE에서 EMAIL 대문자로 출력
-SELECT EMAIL, UPPER(EMAIL)
+SELECT EMAIL, UPPER(EMAIL),initcap(email)
   FROM EMPLOYEE;
  
 ---------------------------------------------------------------------------  
@@ -293,7 +294,7 @@ SELECT EMP_NAME, HIRE_DATE, ADD_MONTHS(HIRE_DATE, 6) "정직원된 날짜"
     * NEXT_DAY(DATE, 요일[문자|숫자]) : 특정 날짜 이후에 가까운 해당 요일의 날짜를 반환해주는 함수
       - 1: 일요일
 */
-SELECT SYSDATE, NEXT_DAY(SYSDATE, '금요일') FROM DUAL;
+SELECT SYSDATE, NEXT_DAY(SYSDATE, '금요일') FROM DUAL; --가장 가까운 금요일 조회
 SELECT SYSDATE, NEXT_DAY(SYSDATE, '금') FROM DUAL;
 
 SELECT SYSDATE, NEXT_DAY(SYSDATE, 6) FROM DUAL;
@@ -470,6 +471,277 @@ SELECT TO_CHAR(SYSDATE,'DDD'), --년을 기준으로 몇일째인지
 SELECT TO_CHAR(SYSDATE,'DAY'), --수요일
         TO_CHAR(SYSDATE,'DY')  --수
     FROM DUAL;
+
+--------------------------------------------------------------------------------
+/*
+        *to_date : 숫자는 문자를 날짜차입으로 변환
+         to_date(숫자|날짜, [포멧])
+*/
+select to_date(20240613) from dual;
+select to_date(240613,'yymmdd')from dual;
+
+select to_date('010610')from dual;--숫자로 앞이 0일때는 오류가 난다 그래서 ''를 붙여서 문자로 바꿔줘야 한다
+select to_char(to_date('070407 020814','yymmdd hhmiss'),'yy-mm-dd hh:mi:ss')from dual;
+
+select to_date('041030 1430000','yymmdd hhmiss')from dual; --오전 오후로는 14시가 없어서 오류가 난다
+select to_date('041030 1030000','yymmdd hhmiss') from dual; 
+
+--환경설정 바꾸고 도구 ->환경설정->데이터베이스 - >nls->날짜 포멧을 rrrr/mm/dd
+SELECT TO_DATE ('981213','YYMMDD') from dual; --yy: 무조건 현재세기로 반영
+select TO_DATE ('021213','YYMMDD')from dual;
+
+
+select TO_DATE ('981213','YYMMDD') from dual; -- rr: 50미만일때 현제새기, 50이상이면 이전세기 반영
+    TO_CHAR( TO_DATE ('981213','YYMMDD'),'RR'),
+    TO_CHAR( TO_DATE ('981213','YYMMDD'), 'YEAR') FROM DUAL;
+
+---------------------------------------------------------------------------------------------
+/*
+        *to_number : 문자를 숫자타입으로 변환
+        to_number(문자,[포멧])
+*/
+select to_number('1234837310') from dual; --숫자의 맨 앞에는 0이 들어갈 수 없기 때문에 맨 앞에 있는 0은 사라진다.
+select '1000'+'500' from dual;            --문자끼리의 연산도 자동 형변환이 된다.
+select '1,000'+'5,000' from dual;         --오류 :콤마가 들어있으면 계산이 되지 않는다.
+
+select to_number('1,000,000','9,999,999')+to_number('50,000','999,999') from dual; --위의 콤마가 있는 문자형식의 숫자를 계산하려면 이렇게 to_number를 해줘야 한다.
+
+--=========================================================================
+--                                  null처리 함수
+--=========================================================================  
+/*
+        nvl(컬럼, 해당 컬럼이 null일때 반환할 값)
+*/
+select emp_name, nvl(bonus,0) from employee;
+
+--전 사원의 사원명, 연봉(보너스 포함)
+select emp_name, to_char(salary*(12+nvl(bonus,0)),'999,999,999L') 연봉 from employee;
+
+select emp_name,(salary*(1+nvl(bonus,0))*12) 연봉 from employee;
+
+--전 사원의 사원명, 부서코드(부서가 없으면 '부서없음'이 나오도록)
+select emp_name, nvl(dept_code,'부서 없음') DEPT_CODE from employee;
+
+----------------------------------------------------------------------------------------------------
+/*
+        *nvl2(컬럼, 반환값1, 반환값2)
+          - 반환값1 : 컬럼 값이 존재할때 반환되는 값
+          - 반환값2 : 컬럼 값이 null일때 반환되는 값
+*/
+-- employee에서 사원명, 급여, 보너스, 성과금(보너스가 있으면 50%, 없으면 10%)선과금은 급여*보너스
+select emp_name, salary, bonus, nvl2(bonus,0.5,0.1)*salary 성과금 from employee;
+
+--employee에서 사원명, 부서(속한 부서가 있으면 '부서 있음', 부서가 없으면'부서 없음')
+select emp_name, nvl2(dept_code,'부서 있음','부서 없음') "속한 부서 여부" from employee;
+
+----------------------------------------------------------------------------------------------------
+/*
+        *nullid(비교대상1, 비교대상2)
+          - 두개의 값이 일치하면 null반환
+          - 두 개의 값이 일치하지 않으면 비교대상1 값을 반환
+*/
+
+select nullif('1234','1234') from dual;
+select nullif('1234','5678') from dual;
+
+
+--=========================================================================
+--                                  선택함수
+--=========================================================================  
+/*
+        decode(비교하고자하는 대상(컬럼|산술연산|함수식), 비교값1, 결과값1, 비교값2, 결과값2,....)
+        스위치 케이스문과 비슷
+        switch(비교대상){
+          case 비교값1: 결과값1
+          case 비교값2: 결과값2
+
+*/
+
+--employee에서 사번, 사원명, 주민번호, 성별(남,여) 조회
+select emp_id, emp_name, emp_no, decode(substr(emp_no,8,1),'1','남','3','남','2','여','4','여') from employee;
+
+--employee에서 사원명, 급여, 직급코드, 인상된 급여(급여 조회시 각 직급별로 인상하여 조회
+--j7은 급여 10퍼
+--j6은 15퍼
+--j5는 20퍼
+--그 외는 5퍼 인상
+select emp_name, to_char(salary,'999,999,999l'), job_code, to_char(decode(job_code, 'J7',salary*1.1,'J6',salary*1.15,'J5',salary*1.2,salary*1.05),'999,999,999L') "인상된 급여" 
+from employee
+order by job_code;
+
+----------------------------------------------------------------------------------------------------
+/*
+        *case when then
+        end
+        
+         case when 조건식1 then 결과값1
+              when 조건식2 then 결과값2
+              ....
+              else 결과값N
+         end
+         if, else if와 비슷하다
+         
+         if(조건식1) 결과값1
+         else if(조건식2) 결과값2
+         ......
+         else 결과값N
+         
+*/
+
+--employee에서 사원명, 급여, 급수(급여가 5백만원 이상이면 '고급', 그렇지 않고 3백5십만원 이상이면 '중급' 나머지는 '초급'
+select emp_name, salary, 
+case when salary>=5000000 then '고급'
+     when salary>=3500000 then'중급'
+     else '초급'
+end "급수"
+from employee
+order by 급수, salary desc;
+
+--=========================================================================
+--                                  그룹 함수
+--=========================================================================  
+/*
+        *sum(컬럼): 컬럼들의 값의 합계
+*/
+--전사원의 총급여의 합 조회
+select to_char(sum(salary),'fm999,999,999L') from employee;
+
+--남자 사원의 총 급여의 합
+select to_char(sum(salary),'fm999,999,999')
+from employee
+where substr(emp_no,8,1) in('1','3');
+--where decode(substr(emp_no,8,1),'1','남' )='남';
+
+--부서코드가 d5인 사원의 연봉(보너스 포함)의 합
+select to_char(sum(salary*(1+nvl(bonus,0))*12),'fml999,999,999')
+from employee
+where dept_code='D5';
+
+----------------------------------------------------------------------------------------------------
+/*
+        *avg(컬럼) : 해당 컬럼들의 평균
+         
+*/
+select avg(salary) from employee; --소수점까지 나온다
+
+select round(avg(salary)) from employee; --반올림
+select round(avg(salary),-1) from employee; -- 1의자리수에서 반올림           
+
+----------------------------------------------------------------------------------------------------
+/*
+        *min/max :  컬럼값 중에서 가장 긑값, 가장 작은 값
+          min(컬럼
+*/
+
+select min(salary),min(emp_name),min(hire_date)
+from employee;
+
+select max(salary),max(emp_name),max(hire_date)
+from employee;
+
+----------------------------------------------------------------------------------------------------
+/*
+        *count : 행의 갯수
+        
+        count(* |컬럼|distinct컬럼)  //모든컬럼 | 컬럼 | distinct컬럼
+         - count(*) : 조회된 결과의 모든 행의 갯수
+         - dount(컬럼) : 제시한 컬럼에서 null값을 제외한 행의 갯수
+         - count(distinct컬럼) : 해당 컬럼값에서 중복값을 제외한 후 행의갯수
+*/
+--전체 사원의 수
+select count(*)
+from employee;
+
+--여자사원의 수
+select count(*)
+--select emp_name, emp_no
+from employee
+where substr(emp_no,8,1) in('2','4');
+
+--보너스를 받는 사원의 수
+select count(bonus) --그냥 칼럼을 입력하면 null값을 빼고 계산해준다.
+from employee;
+
+select count(*)
+from employee;
+where bonus not null;
+
+--부서 배치를 받은 사원 수 
+select count(dept_code)
+from employee;
+
+--현재 사원들이 총 몇개의 부서에 분포되어있는지 조회
+select count(distinct dept_code)
+from employee;
+
+--=========================================================================
+--                                  종합 문제
+--=========================================================================  
+-- 1. EMPLOYEE테이블에서 사원 명과 직원의 주민번호를 이용하여 생년, 생월, 생일 조회
+
+select concat(extract(year from to_date(substr (emp_no,1,6),'rrmmdd')),'년') "생년",
+  concat(extract(month from to_date(substr (emp_no,1,6),'rrmmdd')),'월') "생월", 
+  to_char(to_date(substr (emp_no,1,6),'yymmdd'),'mm"월"dd"일"') "생일" from employee;
+  
+-- 2. EMPLOYEE테이블에서 사원명, 주민번호 조회 (단, 주민번호는 생년월일만 보이게 하고, '-'다음 값은 '*'로 바꾸기)
+select emp_name, concat(substr(emp_no,1,8),'******')
+from employee;
+-- 3. EMPLOYEE테이블에서 사원명, 입사일-오늘, 오늘-입사일 조회
+--   (단, 각 별칭은 근무일수1, 근무일수2가 되도록 하고 모두 정수(내림), 양수가 되도록 처리)
+
+select emp_name, floor(abs(hire_date-sysdate))"근무일수1",floor(sysdate-hire_date) 근무일수2
+from employee;
+-- 4. EMPLOYEE테이블에서 사번이 홀수인 직원들의 정보 모두 조회
+select *
+from employee
+where substr(emp_id,3,1) in('1','3','5','7','9');
+
+--정답
+select *
+from employee
+where mod(substr(emp_id,3,1),2)=1 ;
+
+-- 5. EMPLOYEE테이블에서 근무 년수가 20년 이상인 직원 정보 조회
+select * 
+from employee
+where ceil(months_between(sysdate,hire_date)/12)>=20;
+-- 6. EMPLOYEE 테이블에서 사원명, 급여 조회 (단, 급여는 '\9,000,000' 형식으로 표시)
+select emp_name, to_char(salary,'fml9,999,999') from employee;
+-- 7. EMPLOYEE테이블에서 직원 명, 부서코드, 생년월일, 나이 조회
+--   (단, 생년월일은 주민번호에서 추출해서 00년 00월 00일로 출력되게 하며 
+--   나이는 주민번호에서 출력해서 날짜데이터로 변환한 다음 계산)
+select emp_name, dept_code, 
+    to_char(to_date(substr(emp_no,1,6),'rrmmdd'),'rrrr"년"mm"월"dd"일"') 생년월일,
+    concat(floor((months_between(sysdate,to_date(substr(emp_no,1,6),'rrmmdd'))/12)),' 살') "만 나이"
+    from employee; 
+-- 8. EMPLOYEE테이블에서 부서코드가 D5, D6, D9인 사원만 조회하되 D5면 총무부
+--   , D6면 기획부, D9면 영업부로 처리(EMP_ID, EMP_NAME, DEPT_CODE, 총무부)
+--    (단, 부서코드 오름차순으로 정렬)
+select emp_id, emp_name, dept_code, decode(dept_code, 'D5','총무부','D6','기획부','D9','영업부') 부서
+from employee
+where dept_code in('D5','D6','D9')
+order by dept_code;
+-- 9. EMPLOYEE테이블에서 사번이 201번인 사원명, 주민번호 앞자리, 주민번호 뒷자리, 
+--    주민번호 앞자리와 뒷자리의 합 조회
+select emp_no ,substr(emp_no,1,6),substr(emp_no,8,6),(substr(emp_no,1,6)+substr(emp_no,8,6))
+from employee
+where emp_id =201;
+-- 10. EMPLOYEE테이블에서 부서코드가 D5인 직원의 보너스 포함 연봉 합 조회
+select to_char(sum(salary*(1+nvl(bonus,0)))*12,'fml999,999,999')
+from employee
+where dept_code='D5';
+
+-- 11. EMPLOYEE테이블에서 직원들의 입사일로부터 년도만 가지고 각 년도별 입사 인원수 조회
+--      전체 직원 수, 2001년, 2002년, 2003년, 2004
+select count(*),
+count(case when extract(year from hire_date) in ('2001') then '1' else null end) "2001년",
+count(case when extract(year from hire_date) in ('2002') then '1' else null end)"2002년",
+count(case when extract(year from hire_date) in ('2003') then '1' else null end)"2003년",
+count(case when extract(year from hire_date) in ('2004') then '1' else null end)"2004년" 
+from employee;
+
+
+
 
 
 

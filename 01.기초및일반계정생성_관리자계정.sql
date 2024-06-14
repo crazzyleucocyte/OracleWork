@@ -84,5 +84,10 @@ alter user tjoeun quota 30M on users;
 
 --전체 실행은 f5
 
+--춘대학교 사용자 만들기
+alter session set "_oracle_script" = true; 
+create user chun identified by "1234";
+grant resource, connect to chun;
+alter user chun default tablespace users quota unlimited on users;
 
 
