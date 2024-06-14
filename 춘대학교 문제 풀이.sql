@@ -78,7 +78,7 @@ select substr(PROFESSOR_NAME,2,2) 이름
 from TB_PROFESSOR;
 
 --5
-select STUDENT_NO,student_name a
+select STUDENT_NO,student_name a,
 --extract(year from entrance_date)-extract(year from TO_DATE(SUBSTR(student_ssn,1,6),'rrMMDD'))+1 f
 --floor(months_between(entrance_date,TO_DATE(SUBSTR(student_ssn,1,6),'rrMMDD'))/12) "나이"
 from tb_student
