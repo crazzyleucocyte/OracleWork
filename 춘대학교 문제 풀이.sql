@@ -144,3 +144,45 @@ where STUDENT_NO='A112113'
 group by rollup(substr(term_no,1,4),substr(term_no,5,6))
 order by substr(term_no,1,4),substr(term_no,5,6);
 
+--------------------------------------------------------------------------------
+--option
+--1.
+select student_name 학생이름, student_address 주소지
+from tb_student
+order by student_name;
+
+--2.
+select student_name, student_ssn
+from tb_student
+where absence_yn = 'Y'
+order by student_ssn desc;
+
+--3.
+select student_name, student_no, student_address
+from tb_student
+where (student_address like'%경기도%' or student_address like'%강원도%') and student_no like'9%'
+order by student_name;
+
+--4.
+select professor_name, professor_ssn
+from tb_professor
+where department_no='005'
+order by professor_ssn;
+
+--5.
+select student_no, point
+from tb_grade;
+
+SELECT * FROM USER_TABLES;
+
+SELECT* FROM USER_TAB_COLUMNS;
+
+
+
+
+
+
+
+
+
+
