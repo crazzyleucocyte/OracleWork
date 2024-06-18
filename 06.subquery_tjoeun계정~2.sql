@@ -426,13 +426,18 @@ from employee
 left join job using(job_code)
 where (substr(emp_no,1,2) between '70'and'79')and substr(emp_no,8,1)='2' and emp_name like '전%';
 -- 3. 나이가 가장 막내의 사번, 사원명, 나이, 부서명, 직급명 조회
-
 select emp_id, emp_name, to_char((to_date(substr(emp_no,1,2),'yyyy')-extract(year from sysdate)),'yy'),dept_title,job_name
 from employee e, job J, department
 where to_date(substr(emp_no,1,6),'yymmdd')=(select min(to_date(substr(emp_no,1,6),'yymmdd'))
                                             from employee)
       and dept_id= dept_code and j.job_code=e.job_code;
       
+--위의 쿼리는 중복된 표현이 많으니 아래의 with을 사용한 쿼리를 사용하도록 하자
+      
+with age as(select emp_id,to_date(substr(emp_no,1,6),'yymmdd')생일,to_char((to_date(substr(emp_no,1,2),'yyyy')-extract(year from sysdate)),'yy')나이 from employee)
+select e.emp_id, emp_name, 나이, 생일,emp_no
+from employee e,age a
+where e.emp_id= a.emp_id and 나이 = (select min(나이)from age) ;
       
 -- 4. 이름에 ‘하’가 들어가는 사원의 사번, 사원명, 직급명 조회
 select emp_id, emp_name,job_name

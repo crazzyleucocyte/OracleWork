@@ -171,7 +171,142 @@ order by professor_ssn;
 
 --5.
 select student_no, point
-from tb_grade;
+from tb_grade
+where class_no='C3118100'and term_no='200402'
+order by point desc, student_no;
+
+--6
+select student_no, student_name, department_name
+from tb_student S,tb_department d
+where s.department_no=d.department_no
+order by student_name;
+
+--7
+select class_name, department_name
+from tb_class
+left join tb_department using(department_no);
+
+--8
+select class_name, professor_name
+from tb_class
+join tb_class_professor using(class_no)
+join tb_professor using(professor_no);
+
+--9
+select class_name, professor_name
+from tb_class c
+join tb_class_professor using(class_no)
+join tb_professor using(professor_no)
+join tb_department d on(c.department_no=d.department_no)
+where category ='인문사회';
+
+--10
+select s.STUDENT_NO,STUDENT_NAME,avg(point)
+from tb_grade g, tb_student s
+where DEPARTMENT_NO=(select DEPARTMENT_NO
+                        from tb_department
+                        where DEPARTMENT_NAME='음악학과')
+group by s.STUDENT_NO,STUDENT_NAME;
+
+--    and d.DEPARTMENT_NO(+)=s.DEPARTMENT_NO 
+--    and g.STUDENT_NO(+)=s.STUDENT_NO
+--group by s.STUDENT_NO;
+
+select g.STUDENT_NO,STUDENT_NAME,round(avg(point),1)
+from  tb_student s, tb_department d,tb_grade g
+where  d.DEPARTMENT_NO(+)=s.DEPARTMENT_NO 
+    and s.STUDENT_NO=g.STUDENT_NO 
+    and DEPARTMENT_NAME='음악학과'
+group by g.STUDENT_NO,STUDENT_NAME;
+
+--11
+select DEPARTMENT_NAME  "학과이름", STUDENT_NAME  "학생이름",PROFESSOR_NAME  "지도교수이름"
+from tb_student s, tb_department d, tb_professor p
+where STUDENT_NO='A313047'and s.DEPARTMENT_NO=d.DEPARTMENT_NO and COACH_PROFESSOR_NO=PROFESSOR_NO;
+
+--12
+select s.STUDENT_NAME, g.TERM_NO
+from tb_student s,tb_grade g
+where s.STUDENT_NO=g.STUDENT_NO 
+and term_no like '2007%'
+and g.CLASS_NO=(select CLASS_NO 
+                from tb_class 
+                where CLASS_NAME='인간관계론');
+                
+--13             
+with nonprof as(select CLASS_NO from tb_class
+                minus
+                select class_no from tb_class_professor)
+select class_name,department_name
+from nonprof n,tb_department d, tb_class c
+where n.class_no=c.class_no 
+and d.DEPARTMENT_NO=c.DEPARTMENT_NO
+and category = '예체능';
+
+--14
+select STUDENT_NAME,nvl(PROFESSOR_NAME,'지도교수 미지정')
+from tb_student s,tb_professor p
+where s.DEPARTMENT_NO=(
+                     select DEPARTMENT_NO 
+                     from tb_department 
+                     where department_name='서반아어학과')
+and COACH_PROFESSOR_NO=PROFESSOR_NO(+);
+
+--15
+select g.STUDENT_NO,STUDENT_NAME,DEPARTMENT_NAME,avg(POINT)
+from tb_student s,tb_grade g,tb_department d
+where ABSENCE_YN='N'  
+and d.DEPARTMENT_NO=s.DEPARTMENT_NO 
+and g.STUDENT_NO=s.STUDENT_NO
+group by g.STUDENT_NO,STUDENT_NAME,DEPARTMENT_NAME
+having avg(POINT)>=4;
+
+--16
+select g.CLASS_NO,c. CLASS_NAME,avg(point)
+from tb_class c, tb_grade g
+where DEPARTMENT_NO=(select DEPARTMENT_NO from tb_department where department_name = '환경조경학과')
+and c.class_no=g.class_no
+AND CLASS_TYPE LIKE '%전공%'
+group by g.class_no, class_name;
+                
+--17
+SELECT STUDENT_NAME,STUDENT_ADDRESS
+FROM TB_STUDENT
+WHERE DEPARTMENT_NO=(SELECT DEPARTMENT_NO FROM TB_STUDENT WHERE STUDENT_NAME='최경희');
+
+--18
+WITH SMART AS (SELECT STUDENT_NAME, RANK()OVER(ORDER BY AVG(POINT) DESC) 성적
+               FROM TB_STUDENT S, TB_DEPARTMENT D, TB_GRADE G
+               WHERE S.DEPARTMENT_NO = D.DEPARTMENT_NO
+               AND DEPARTMENT_NAME = '국어국문학과'
+               AND S.STUDENT_NO=G.STUDENT_NO
+               GROUP BY STUDENT_NAME)
+SELECT STUDENT_NO,S.STUDENT_NAME
+FROM TB_STUDENT ST,SMART S
+WHERE ST.STUDENT_NAME =S.STUDENT_NAME
+AND 성적=1;
+
+--19
+                
+SELECT DEPARTMENT_NAME "계열 학과명",ROUND(AVG(POINT),1)"전공평점"
+FROM TB_DEPARTMENT D, TB_GRADE G, TB_STUDENT S
+WHERE CATEGORY=(SELECT CATEGORY 
+                FROM TB_DEPARTMENT 
+                WHERE DEPARTMENT_NAME='환경조경학과')
+AND S.DEPARTMENT_NO=D.DEPARTMENT_NO
+AND S.STUDENT_NO=G.STUDENT_NO
+GROUP BY DEPARTMENT_NAME;
+
+
+
+
+
+
+
+
+
+
+
 
 SELECT * FROM USER_TABLES;
 
