@@ -297,14 +297,53 @@ AND S.DEPARTMENT_NO=D.DEPARTMENT_NO
 AND S.STUDENT_NO=G.STUDENT_NO
 GROUP BY DEPARTMENT_NAME;
 
+----------------------------------------------------------------------------------------------------------------
+--DDL
+--1.
+create table tb_category(
+name varchar2(10),
+use_yn char(1) default 'Y'
+);
 
+--2
+create table tb_class_type(
+no varchar2(5) primary key,
+name varchar2(10)
+);
 
+--3
+alter table tb_category add constraint cat_pk primary key(name);
 
+--4
+alter table tb_class_type modify name not null;
 
+--5
+alter table tb_class_type modify no varchar2(10)
+                          modify name varchar2(20);
+alter table tb_category modify name varchar2(20);
+rollback;
 
+--6-------***
+alter table tb_class_type rename column no to class_type_no;
+alter table tb_category rename column name to category_name;
 
+--7
+alter table tb_class_type rename constraint SYS_C008056 to pk_class_type_no;
+alter table tb_category rename constraint CAT_PK to pk_category_name;
 
+--8
+insert into tb_category values('공학','Y');
+insert into tb_category values('자연과학','Y');
+insert into tb_category values('의학','Y');
+insert into tb_category values('예체능','Y');
+insert into tb_category values('인문사회','Y');
 
+--9
+alter table tb_department
+add constraint fk_department_category 
+foreign key(category) 
+references tb_category(category_name); 
+-- forrign key : alter talbe 테이블명 add foreign key(나의 컬럼명) reference 참조할 테이블명[(참조할 컬럼명)]
 
 
 

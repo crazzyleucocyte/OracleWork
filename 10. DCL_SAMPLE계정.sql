@@ -1,0 +1,17 @@
+CREATE TABLE SAMPLE(
+ID NUMBER,
+PWD VARCHAR2(30)
+);
+--테이블 생성 권한을 주지 않으면오류가 난다.
+
+INSERT INTO SAMPLE VALUES(1,'PASS01');
+--데이터 삽입에 대한 권한을 주지 않으면 오류가 난다
+
+SELECT*
+FROM TJOEUN.EMPLOYEE;
+
+INSERT INTO TJOEUN.EMPLOYEE(EMP_ID, EMP_NAME,EMP_NO,JOB_CODE) 
+    VALUES(305,'강민석','980123-129384','J2');
+--데이터가 들어가지 않았다면 커밋을 누르자.
+
+
