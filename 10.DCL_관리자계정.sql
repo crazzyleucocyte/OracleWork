@@ -32,7 +32,7 @@ create user sample identified by 1234;
 --2. 접속을 위한 권한 부여
 grant create session to sample;
 -- 이걸 해줘야 계정 생성해서 테이블에 접속할 수 있다
-CREATE GRANT SESSIONTO SAMPLE;
+CREATE GRANT SESSIon to SAMPLE;
 
 --3.테이블을 생성할 수 있는 권한
 GRANT CREATE TABLE TO SAMPLE;

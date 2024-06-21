@@ -16,6 +16,95 @@
            3) 컬럼명/제약조건명/테이블명 변경할때 사용
 
 */
+/*
+---------------------------------------------------------------------------------------------------
+                                        alter
+---------------------------------------------------------------------------------------------------
+====================================================================================================
+                                 alter table 테이블명 ADD
+====================================================================================================
+
+--- alter table 테이블명 add
+     
+        - 컬럼 추가
+        *** alter table 테이블명 add 컬럼명 자료형 [default];
+        
+            ex)alter table departmnet add cname varchar(2) default 'Y'
+            
+        - 제약조건 추가(not null 제외)
+        *** alter table 테이블명 add [constraint 제약조건명] 제약조건 (컬럼명)
+            ex)  alter table dept_copy add constraint dpt_pk primary key(dept_id);
+            
+            예외사항(foreign key)
+            alter table 테이블명 add constraint 제약조건명 foreign key(컬럼명) reference 참조할테이블(컬럼명);
+====================================================================================================
+                                    alter table 테이블명 modify
+====================================================================================================
+
+        - 컬럼 자료형, default 수정
+        *** alter table 테이블명 modify 컬럼명 [자료형|default][default]
+        
+            ex) /alter table department modify dept_title varchar2(50)
+                /alter table employee job_code default 'J1'
+                
+        - 제약조건 수정(null|not null)
+        *** alter table 테이블명 modify 컬럼명 constraint  [null|not null]
+                ex) alter table dept_copy modify dept_title not null;
+====================================================================================================
+                                    alter table 테이블명 rename
+====================================================================================================
+        
+        - 컬럼명 변경
+        *** alter table 테이블명 rename column 기존 컬럼명 to 바꿀 컬럼명
+            ex) alter table dept_copy rename column dept_title to dept_name;
+            
+        - 테이블명 변경
+        *** alter talbe 테이블명 rename to 바꿀 테이블명
+        
+        - 제약조건명 변경
+        *** alter table 테이블명 rename constraint 기존 제약조건명 to 바꿀 제약조건명
+            ex) alter dept_copy rename constraint dpt_pk to dept_copy_pk;
+          
+---------------------------------------------------------------------------------------------------
+                                        drop
+---------------------------------------------------------------------------------------------------
+
+        - 컬럼 삭제
+        *** drop table 테이블명 column 컬럼명
+        
+            ex) drop table department column dept_title
+            
+        - 제약조건 삭제(컬럼명이 아닌 제약조건명으로 삭제해야함)
+        *** drop table 테이블명 constraint 제약조건명
+            ex) drop table dept_copy constraint dpt_pk
+            
+        - 테이블 삭제
+        *** frop table 테이블명
+            ex) drop table dept_copy;
+            
+            **추가사항
+             - foreign key 가 걸려있는 부모테이블을 삭제하기 위해서는 자식 테이블의 foreign key를 같이 삭제해줘야 한다.
+        
+        -foreign key가 걸려있는 부모테이블 삭제
+        ***drop table 테이블명 cascade constraint;
+====================================================================================================
+
+
+
+*/
+create table dept_copy
+as select*
+    from department;
+ alter table dept_copy add constraint dpt_pk primary key(dept_id);
+ rollback;
+ alter table dept_copy drop constraint SYS_C008137;
+ 
+ alter table dept_copy modify dept_title null;
+ 
+ alter table dept_copy add constraint dept_fk foreign key(dept_id) references department(dept_id);
+ 
+ drop table dept_copy;
+ 
 --------------------------------------------------------------------------------------------------------------------
 /*
                    1) 컬럼 추가/수정/삭제
@@ -185,70 +274,4 @@ drop table dept_test;
         --테이블 우클릭하고 삭제할때 계단식 제약조건 체크박스가 뜻하는게 이거다
         --삭제하려는 테이블이 부모테이블이고 외래키가 있을때 그 외래키 제약조건을 자식테이블에서도 삭제시켜준다.
 */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
