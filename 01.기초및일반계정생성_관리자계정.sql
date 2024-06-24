@@ -96,4 +96,8 @@ create user ddl identified by "1234";
 grant resource, connect to ddl;
 alter user ddl default tablespace users quota unlimited on users;
 
+alter session set "_oracle_script" = true; 
+create user MART identified by "1234";
+grant resource, connect to MART;
+alter user MART default tablespace users quota unlimited on users;
 
