@@ -356,6 +356,11 @@ grant create view to chun;
 SELECT* FROM USER_TAB_COLUMNS;
 
 
+select student_no, student_name
+from tb_student
+where student_no='9556017' and student_name='서성철';
+
+
 
 
 

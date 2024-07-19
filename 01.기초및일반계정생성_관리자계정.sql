@@ -101,3 +101,13 @@ create user MART identified by "1234";
 grant resource, connect to MART;
 alter user MART default tablespace users quota unlimited on users;
 
+alter session set "_oracle_script" = true; 
+create user jsp identified by "1234";
+grant resource, connect to jsp;
+alter user jsp default tablespace users quota unlimited on users;
+
+alter session set "_oracle_script" = true; 
+create user vote identified by "1234";
+grant resource, connect to vote;
+alter user vote default tablespace users quota unlimited on users;
+
