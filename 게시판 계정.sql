@@ -42,13 +42,30 @@ insert into board values(SEQ_BOARD.NEXTVAL, '엄준식', '제목11', '내용11',
 insert into board values(SEQ_BOARD.NEXTVAL, '김철수', '제목12', '내용12', 0, SEQ_BOARD.CURRVAL, 0, '2023-05-22', '1234', '0:0:0:0:0:0:0:1', default);
 insert into board values(SEQ_BOARD.NEXTVAL, '이영미', '제목13', '내용13', 0, SEQ_BOARD.CURRVAL, 0, '2023-05-29', '1234', '0:0:0:0:0:0:0:1', default);
 
+select * 
+from 
+    (select ROWNUM as RNUM, BT1.* 
+     from 
+        (select * 
+         from board 
+         order by ref desc, pos) BT1) 
+where RNUM between 1 and 10;
 
+select * 
+from 
+    (select ROWNUM as RNUM, BT1.* 
+     from 
+        (select * 
+         from board
+         where name like('%동%')
+         order by ref desc, pos) BT1) 
+where RNUM between 1 and 10;
 
-
-
+select * from (select ROWNUM as RNUM, BT1.* from (select * from board where name like('%동%')order by ref desc, pos) BT1) where RNUM between 1 and 10;
 
 select count(num) from board;
 
+select * from (select ROWNUM as RNUM, BT1.* from (select * from board where null like '%null%' order by ref desc, pos) BT1) where RNUM between 1 and 10;
 
 
 
