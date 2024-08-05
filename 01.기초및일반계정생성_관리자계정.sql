@@ -115,3 +115,8 @@ alter session set "_oracle_script" = true;
 create user board identified by "1234";
 grant resource, connect to board;
 alter user board default tablespace users quota unlimited on users;
+
+alter session set "_oracle_script" = true; 
+create user mybatis identified by "1234";
+grant resource, connect to mybatis;
+alter user mybatis default tablespace users quota unlimited on users;
