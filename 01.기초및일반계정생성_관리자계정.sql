@@ -125,3 +125,18 @@ alter session set "_oracle_script" = true;
 create user springboot identified by "1234";
 grant resource, connect to springboot;
 alter user springboot default tablespace users quota unlimited on users;
+
+alter session set "_oracle_script" = true; 
+create user semiproject identified by "1234";
+grant resource, connect to semiproject;
+alter user semiproject default tablespace users quota unlimited on users;
+
+alter session set "_oracle_script" = true; 
+create user semiprojecttest identified by "1234";
+grant resource, connect to semiprojecttest;
+alter user semiprojecttest default tablespace users quota unlimited on users;
+
+alter session set "_oracle_script" = true; 
+create user dicom identified by "1234";
+grant resource, connect to dicom;
+alter user dicom default tablespace users quota unlimited on users;

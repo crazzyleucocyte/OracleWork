@@ -264,6 +264,7 @@ begin
     join department on(dept_id= dept_code)
     join location on(local_code=location_id)
     join national using(national_code)
+    
     where emp_id=&사번;
     
     dbms_output.put_line('사번 : '||eid);    
